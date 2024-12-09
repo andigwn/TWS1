@@ -5,6 +5,7 @@ const createKosValidation = Joi.object({
     pemilik_kos: Joi.string().max(100).required(),
     alamat_kos: Joi.string().max(255).required(),
     description: Joi.string().max(191).optional(),
+    image: Joi.string().optional(),
 });
 
 const getKosValidation = Joi.number().positive().required();
@@ -15,6 +16,7 @@ const updateKosValidation = Joi.object({
     pemilik_kos: Joi.string().max(100).optional(),
     alamat_kos: Joi.string().max(255).optional(),
     description: Joi.string().max(191).optional(),
+    image: Joi.string().optional(),
 });
 
 const searchKosValidation = Joi.object({
