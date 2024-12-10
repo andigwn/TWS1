@@ -22,19 +22,22 @@ const register = async (request) => {
             username: true,
             email: true,
             name: true
+
         }
     })
 }
 
 const login = async (request) => {
     const loginRequest = validate(userLoginValidation, request);
+
     const user = await prismaClient.user.findUnique({
         where: {
             username: loginRequest.username
         },
         select: {
             username: true,
-            password: true
+            password: true,
+            role: true
         }
     });
 
@@ -48,20 +51,18 @@ const login = async (request) => {
     }
 
     // Generate JWT token
-    const token = generateToken({ username: user.username });
+    const token = generateToken(user);
 
     // Save token to database
-    return await prismaClient.user.update({
+    await prismaClient.user.update({
         where: {
             username: user.username
         },
         data: {
             token: token
         },
-        select: {
-            token: true
-        }
     });
+    return { token: token };
 }
 
 const get = async (username) => {
