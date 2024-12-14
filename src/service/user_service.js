@@ -62,7 +62,7 @@ const login = async (request) => {
             token: token
         },
     });
-    return { token: token };
+    return { token: token, role: user.role };
 }
 
 const get = async (username) => {
