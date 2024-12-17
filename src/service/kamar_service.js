@@ -137,8 +137,8 @@ const remove = async (user, kosId, kamarId) => {
     })
 }
 
-const list = async (user, kosId) => {
-    kosId = await checkKos(user, kosId);
+const list = async (kosId, request) => {
+    kosId = await validate(getKosValidation, request);
     return await prismaClient.kamar.findMany({
         where: {
             kos_id: kosId

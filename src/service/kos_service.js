@@ -123,14 +123,11 @@ const remove = async (user, kosId) => {
 
 }
 
-const search = async (user, request) => {
+const search = async (request) => {
     request = validate(searchKosValidation, request);
     const skip = (request.page - 1) * request.size
 
     const filters = [];
-    filters.push({
-        username: user.username
-    })
     if (request.nama_kos) {
         filters.push({
             nama_kos: {

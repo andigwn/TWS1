@@ -3,7 +3,7 @@ import { getUserValidation, updateUserVaidation, userLoginValidation, userRegist
 import { validate } from "../validation/validation.js"
 import bcrypt from "bcrypt";
 import { prismaClient } from "../application/database.js";
-import { v4 as uuid } from "uuid"
+import { generateToken } from "../helpers/jwt.helper.js";
 
 const register = async (request) => {
     const user = validate(userRegisterValidation, request);
@@ -22,41 +22,47 @@ const register = async (request) => {
             username: true,
             email: true,
             name: true
+
         }
     })
 }
 
 const login = async (request) => {
     const loginRequest = validate(userLoginValidation, request);
+
     const user = await prismaClient.user.findUnique({
         where: {
             username: loginRequest.username
         },
         select: {
             username: true,
-            password: true
+            password: true,
+            role: true
         }
     });
+
     if (!user) {
         throw new ResponseError(401, "username or password wrong");
     }
+
     const isPasswordValid = await bcrypt.compare(loginRequest.password, user.password);
     if (!isPasswordValid) {
         throw new ResponseError(401, "username or password wrong");
     }
-    const token = uuid().toString();
-    return await prismaClient.user.update({
+
+    // Generate JWT token
+    const token = generateToken(user);
+
+    // Save token to database
+    await prismaClient.user.update({
         where: {
             username: user.username
         },
         data: {
             token: token
         },
-        select: {
-            token: true
-        }
     });
-
+    return { token: token, role: user.role };
 }
 
 const get = async (username) => {
